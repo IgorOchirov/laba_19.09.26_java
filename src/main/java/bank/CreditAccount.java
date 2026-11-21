@@ -1,8 +1,5 @@
 package bank;
 
-/**
- * Кредитный счёт. Баланс может уйти в минус, но не ниже кредитного лимита.
- */
 public class CreditAccount extends BankAccount {
 
     private final double creditLimit;
@@ -17,13 +14,9 @@ public class CreditAccount extends BankAccount {
     }
 
     @Override
-    public boolean withdraw(double amount) {
-        if (!canWithdraw(amount, -creditLimit)) {
-            return false;
-        }
-
-        decreaseBalance(amount);
-        return true;
+    protected double getAvailableAmount() {
+        // свои деньги плюс неиспользованный кредитный лимит
+        return Math.max(0, getBalance() + creditLimit);
     }
 
     public double getCreditLimit() {

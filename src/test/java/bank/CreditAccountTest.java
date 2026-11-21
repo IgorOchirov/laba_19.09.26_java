@@ -16,13 +16,10 @@ class CreditAccountTest {
         CreditAccount account = new CreditAccount(new AccountNumber("4000000009"), "Сидоров", 1_000, 5_000);
 
         // Act
-        boolean withdrawn = account.withdraw(4_000);
+        account.withdraw(4_000);
 
         // Assert
-        assertAll(
-                () -> assertTrue(withdrawn),
-                () -> assertEquals(-3_000, account.getBalance(), 0.0001)
-        );
+        assertEquals(-3_000, account.getBalance(), 0.0001);
     }
 
     @Test
@@ -31,12 +28,9 @@ class CreditAccountTest {
         CreditAccount account = new CreditAccount(new AccountNumber("4000000009"), "Сидоров", 1_000, 5_000);
         account.withdraw(4_000);
 
-        // Act
-        boolean withdrawn = account.withdraw(3_000);
-
-        // Assert
+        // Act / Assert
         assertAll(
-                () -> assertFalse(withdrawn),
+                () -> assertThrows(InsufficientFundsException.class, () -> account.withdraw(3_000)),
                 () -> assertEquals(-3_000, account.getBalance(), 0.0001)
         );
     }
@@ -47,13 +41,10 @@ class CreditAccountTest {
         CreditAccount account = new CreditAccount(new AccountNumber("4000000009"), "Сидоров", 1_000, 5_000);
 
         // Act
-        boolean withdrawn = account.withdraw(6_000);
+        account.withdraw(6_000);
 
         // Assert
-        assertAll(
-                () -> assertTrue(withdrawn),
-                () -> assertEquals(-5_000, account.getBalance(), 0.0001)
-        );
+        assertEquals(-5_000, account.getBalance(), 0.0001);
     }
 
     @Test
@@ -61,14 +52,10 @@ class CreditAccountTest {
         // Arrange
         CreditAccount account = new CreditAccount(new AccountNumber("4000000009"), "Сидоров", 1_000, 5_000);
 
-        // Act
-        boolean zeroWithdrawn = account.withdraw(0);
-        boolean negativeWithdrawn = account.withdraw(-100);
-
-        // Assert
+        // Act / Assert
         assertAll(
-                () -> assertFalse(zeroWithdrawn),
-                () -> assertFalse(negativeWithdrawn),
+                () -> assertThrows(IllegalArgumentException.class, () -> account.withdraw(0)),
+                () -> assertThrows(IllegalArgumentException.class, () -> account.withdraw(-100)),
                 () -> assertEquals(1_000, account.getBalance(), 0.0001)
         );
     }
@@ -79,12 +66,9 @@ class CreditAccountTest {
         CreditAccount account = new CreditAccount(new AccountNumber("4000000009"), "Сидоров", 1_000, 5_000);
         account.withdraw(4_000);
 
-        // Act
-        boolean withdrawn = account.withdraw(3_000);
-
-        // Assert
+        // Act / Assert
         assertAll(
-                () -> assertFalse(withdrawn),
+                () -> assertThrows(InsufficientFundsException.class, () -> account.withdraw(3_000)),
                 () -> assertEquals(-3_000, account.getBalance(), 0.0001)
         );
     }

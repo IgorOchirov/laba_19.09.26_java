@@ -1,9 +1,5 @@
 package bank;
 
-/**
- * Комиссия в процентах от суммы перевода.
- * Например, percent = 1 значит, что с 10 000 рублей удержится 100.
- */
 public class PercentCommission implements CommissionPolicy {
 
     private final double percent;

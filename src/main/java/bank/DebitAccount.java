@@ -1,9 +1,5 @@
 package bank;
 
-/**
- * Дебетовый счёт. Снять можно только те деньги, которые уже лежат на счёте,
- * поэтому уйти в минус такой счёт не может.
- */
 public class DebitAccount extends BankAccount {
 
     public DebitAccount(AccountNumber number, String owner, double initialBalance) {
@@ -11,12 +7,7 @@ public class DebitAccount extends BankAccount {
     }
 
     @Override
-    public boolean withdraw(double amount) {
-        if (!canWithdraw(amount, 0)) {
-            return false;
-        }
-
-        decreaseBalance(amount);
-        return true;
+    protected double getAvailableAmount() {
+        return getBalance();
     }
 }

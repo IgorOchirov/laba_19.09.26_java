@@ -16,13 +16,10 @@ class SavingsAccountTest {
         SavingsAccount account = new SavingsAccount(new AccountNumber("4000000008"), "Петров", 10_000, 1_000);
 
         // Act
-        boolean withdrawn = account.withdraw(8_500);
+        account.withdraw(8_500);
 
         // Assert
-        assertAll(
-                () -> assertTrue(withdrawn),
-                () -> assertEquals(1_500, account.getBalance(), 0.0001)
-        );
+        assertEquals(1_500, account.getBalance(), 0.0001);
     }
 
     @Test
@@ -31,12 +28,9 @@ class SavingsAccountTest {
         SavingsAccount account = new SavingsAccount(new AccountNumber("4000000008"), "Петров", 10_000, 1_000);
         account.withdraw(8_500);
 
-        // Act
-        boolean withdrawn = account.withdraw(1_000);
-
-        // Assert
+        // Act / Assert
         assertAll(
-                () -> assertFalse(withdrawn),
+                () -> assertThrows(InsufficientFundsException.class, () -> account.withdraw(1_000)),
                 () -> assertEquals(1_500, account.getBalance(), 0.0001)
         );
     }
@@ -47,12 +41,9 @@ class SavingsAccountTest {
         SavingsAccount account = new SavingsAccount(new AccountNumber("4000000008"), "Петров", 10_000, 1_000);
         account.withdraw(8_500);
 
-        // Act
-        boolean withdrawn = account.withdraw(1_000);
-
-        // Assert
+        // Act / Assert
         assertAll(
-                () -> assertFalse(withdrawn),
+                () -> assertThrows(InsufficientFundsException.class, () -> account.withdraw(1_000)),
                 () -> assertEquals(1_500, account.getBalance(), 0.0001)
         );
     }
@@ -64,13 +55,10 @@ class SavingsAccountTest {
         account.withdraw(8_500);
 
         // Act
-        boolean withdrawn = account.withdraw(500);
+        account.withdraw(500);
 
         // Assert
-        assertAll(
-                () -> assertTrue(withdrawn),
-                () -> assertEquals(1_000, account.getBalance(), 0.0001)
-        );
+        assertEquals(1_000, account.getBalance(), 0.0001);
     }
 
     @Test
@@ -78,14 +66,10 @@ class SavingsAccountTest {
         // Arrange
         SavingsAccount account = new SavingsAccount(new AccountNumber("4000000008"), "Петров", 10_000, 1_000);
 
-        // Act
-        boolean zeroWithdrawn = account.withdraw(0);
-        boolean negativeWithdrawn = account.withdraw(-50);
-
-        // Assert
+        // Act / Assert
         assertAll(
-                () -> assertFalse(zeroWithdrawn),
-                () -> assertFalse(negativeWithdrawn),
+                () -> assertThrows(IllegalArgumentException.class, () -> account.withdraw(0)),
+                () -> assertThrows(IllegalArgumentException.class, () -> account.withdraw(-50)),
                 () -> assertEquals(10_000, account.getBalance(), 0.0001)
         );
     }

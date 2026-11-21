@@ -1,8 +1,5 @@
 package bank;
 
-/**
- * Номер банковского счёта: ровно 10 цифр.
- */
 public record AccountNumber(String value) {
 
     public AccountNumber {

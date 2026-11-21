@@ -1,8 +1,5 @@
 package bank;
 
-/**
- * Небольшая демонстрация: создаём несколько операций и печатаем их.
- */
 public class TransactionDemo {
 
     public static void main(String[] args) {

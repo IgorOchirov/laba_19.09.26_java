@@ -1,11 +1,5 @@
 package bank;
 
-/**
- * Сервис переводов между счетами. Работает с любым типом счёта:
- * правила списания определяет сам счёт через метод {@link BankAccount#withdraw(double)}.
- * Комиссия считается по переданной {@link CommissionPolicy}, а об успешном
- * переводе сообщается через {@link NotificationService}.
- */
 public class TransferService {
 
     private final CommissionPolicy commissionPolicy;
@@ -24,25 +18,16 @@ public class TransferService {
         this.notificationService = notificationService;
     }
 
-    /**
-     * Переводит деньги с одного счёта на другой.
-     * С отправителя списывается сумма перевода плюс комиссия, получатель получает
-     * только сумму перевода. Если списать всю сумму с комиссией не удалось,
-     * баланс получателя не меняется и уведомление не отправляется.
-     *
-     * @param from   счёт отправителя
-     * @param to     счёт получателя
-     * @param amount сумма перевода, должна быть больше нуля
-     * @return {@code true}, если перевод выполнен
-     */
     public boolean transfer(BankAccount from, BankAccount to, double amount) {
         if (from == null || to == null || from == to || amount <= 0) {
             return false;
         }
 
         double commission = commissionPolicy.calculate(amount);
-        if (!from.withdraw(amount + commission)) {
-            return false;
+        try {
+            from.withdraw(amount + commission);
+        } catch (InsufficientFundsException e) {
+            throw new TransferLimitExceededException("Transfer limit exceeded");
         }
 
         to.deposit(amount);

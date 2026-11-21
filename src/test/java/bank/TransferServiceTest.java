@@ -9,6 +9,7 @@ import java.nio.charset.StandardCharsets;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class TransferServiceTest {
@@ -42,12 +43,10 @@ class TransferServiceTest {
         BankAccount from = new DebitAccount(new AccountNumber("4000000001"), "Иванов", 1_000);
         BankAccount to = new DebitAccount(new AccountNumber("4000000002"), "Петров", 2_000);
 
-        // Act
-        boolean transferred = service.transfer(from, to, 3_000);
-
-        // Assert
+        // Act / Assert
         assertAll(
-                () -> assertFalse(transferred),
+                () -> assertThrows(TransferLimitExceededException.class,
+                        () -> service.transfer(from, to, 3_000)),
                 () -> assertEquals(1_000, from.getBalance(), 0.0001),
                 () -> assertEquals(2_000, to.getBalance(), 0.0001),
                 () -> assertEquals(0, notifications.getNotificationCount())
@@ -156,12 +155,10 @@ class TransferServiceTest {
         BankAccount from = new DebitAccount(new AccountNumber("4000000001"), "Иванов", 10_000);
         BankAccount to = new DebitAccount(new AccountNumber("4000000002"), "Петров", 2_000);
 
-        // Act
-        boolean transferred = service.transfer(from, to, 10_000);
-
-        // Assert
+        // Act / Assert
         assertAll(
-                () -> assertFalse(transferred),
+                () -> assertThrows(TransferLimitExceededException.class,
+                        () -> service.transfer(from, to, 10_000)),
                 () -> assertEquals(10_000, from.getBalance(), 0.0001),
                 () -> assertEquals(2_000, to.getBalance(), 0.0001),
                 () -> assertEquals(0, notifications.getNotificationCount())

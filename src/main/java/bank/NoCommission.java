@@ -1,8 +1,5 @@
 package bank;
 
-/**
- * Политика без комиссии: комиссия всегда равна нулю.
- */
 public class NoCommission implements CommissionPolicy {
 
     @Override

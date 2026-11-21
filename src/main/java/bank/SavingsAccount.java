@@ -1,9 +1,5 @@
 package bank;
 
-/**
- * Сберегательный счёт. После снятия на счёте обязан остаться
- * минимальный остаток {@code minimumBalance}.
- */
 public class SavingsAccount extends BankAccount {
 
     private final double minimumBalance;
@@ -18,13 +14,9 @@ public class SavingsAccount extends BankAccount {
     }
 
     @Override
-    public boolean withdraw(double amount) {
-        if (!canWithdraw(amount, minimumBalance)) {
-            return false;
-        }
-
-        decreaseBalance(amount);
-        return true;
+    protected double getAvailableAmount() {
+        // минимальный остаток трогать нельзя
+        return Math.max(0, getBalance() - minimumBalance);
     }
 
     public double getMinimumBalance() {

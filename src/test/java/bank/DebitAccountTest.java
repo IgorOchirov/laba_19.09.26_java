@@ -55,13 +55,10 @@ class DebitAccountTest {
         DebitAccount account = new DebitAccount(new AccountNumber("4000000005"), "Иванов", 10_000);
 
         // Act
-        boolean withdrawn = account.withdraw(8_000);
+        account.withdraw(8_000);
 
         // Assert
-        assertAll(
-                () -> assertTrue(withdrawn),
-                () -> assertEquals(2_000, account.getBalance(), 0.0001)
-        );
+        assertEquals(2_000, account.getBalance(), 0.0001);
     }
 
     @Test
@@ -70,12 +67,9 @@ class DebitAccountTest {
         DebitAccount account = new DebitAccount(new AccountNumber("4000000005"), "Иванов", 10_000);
         account.withdraw(8_000);
 
-        // Act
-        boolean withdrawn = account.withdraw(3_000);
-
-        // Assert
+        // Act / Assert
         assertAll(
-                () -> assertFalse(withdrawn),
+                () -> assertThrows(InsufficientFundsException.class, () -> account.withdraw(3_000)),
                 () -> assertEquals(2_000, account.getBalance(), 0.0001)
         );
     }
@@ -86,13 +80,10 @@ class DebitAccountTest {
         DebitAccount account = new DebitAccount(new AccountNumber("4000000005"), "Иванов", 10_000);
 
         // Act
-        boolean withdrawn = account.withdraw(10_000);
+        account.withdraw(10_000);
 
         // Assert
-        assertAll(
-                () -> assertTrue(withdrawn),
-                () -> assertEquals(0, account.getBalance(), 0.0001)
-        );
+        assertEquals(0, account.getBalance(), 0.0001);
     }
 
     @Test
@@ -100,12 +91,9 @@ class DebitAccountTest {
         // Arrange
         DebitAccount account = new DebitAccount(new AccountNumber("4000000005"), "Иванов", 10_000);
 
-        // Act
-        boolean withdrawn = account.withdraw(0);
-
-        // Assert
+        // Act / Assert
         assertAll(
-                () -> assertFalse(withdrawn),
+                () -> assertThrows(IllegalArgumentException.class, () -> account.withdraw(0)),
                 () -> assertEquals(10_000, account.getBalance(), 0.0001)
         );
     }
@@ -115,12 +103,9 @@ class DebitAccountTest {
         // Arrange
         DebitAccount account = new DebitAccount(new AccountNumber("4000000005"), "Иванов", 10_000);
 
-        // Act
-        boolean withdrawn = account.withdraw(-100);
-
-        // Assert
+        // Act / Assert
         assertAll(
-                () -> assertFalse(withdrawn),
+                () -> assertThrows(IllegalArgumentException.class, () -> account.withdraw(-100)),
                 () -> assertEquals(10_000, account.getBalance(), 0.0001)
         );
     }
