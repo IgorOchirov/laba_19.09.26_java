@@ -83,7 +83,7 @@ class TransferServiceTest {
     }
 
     @Test
-    void cannotTransferZeroOrNegativeAmount() {
+    void cannotTransferZeroAmount() {
         // Arrange
         CollectingNotifications notifications = new CollectingNotifications();
         TransferService service = new TransferService(new NoCommission(), notifications);
@@ -91,13 +91,31 @@ class TransferServiceTest {
         BankAccount to = new DebitAccount("B", "Петров", 0);
 
         // Act
-        boolean zeroTransfer = service.transfer(from, to, 0);
-        boolean negativeTransfer = service.transfer(from, to, -100);
+        boolean transferred = service.transfer(from, to, 0);
 
         // Assert
         assertAll(
-                () -> assertFalse(zeroTransfer),
-                () -> assertFalse(negativeTransfer),
+                () -> assertFalse(transferred),
+                () -> assertEquals(10_000, from.getBalance(), 0.0001),
+                () -> assertEquals(0, to.getBalance(), 0.0001),
+                () -> assertTrue(notifications.messages.isEmpty())
+        );
+    }
+
+    @Test
+    void cannotTransferNegativeAmount() {
+        // Arrange
+        CollectingNotifications notifications = new CollectingNotifications();
+        TransferService service = new TransferService(new NoCommission(), notifications);
+        BankAccount from = new DebitAccount("A", "Иванов", 10_000);
+        BankAccount to = new DebitAccount("B", "Петров", 0);
+
+        // Act
+        boolean transferred = service.transfer(from, to, -100);
+
+        // Assert
+        assertAll(
+                () -> assertFalse(transferred),
                 () -> assertEquals(10_000, from.getBalance(), 0.0001),
                 () -> assertEquals(0, to.getBalance(), 0.0001),
                 () -> assertTrue(notifications.messages.isEmpty())
@@ -125,6 +143,21 @@ class TransferServiceTest {
     }
 
     @Test
+    void recipientReceivesExactlyTransferAmountWithoutCommission() {
+        // Arrange
+        CollectingNotifications notifications = new CollectingNotifications();
+        TransferService service = new TransferService(new NoCommission(), notifications);
+        BankAccount from = new DebitAccount("A", "Иванов", 10_000);
+        BankAccount to = new DebitAccount("B", "Петров", 500);
+
+        // Act
+        service.transfer(from, to, 3_000);
+
+        // Assert
+        assertEquals(3_500, to.getBalance(), 0.0001);
+    }
+
+    @Test
     void transferFailsWhenSenderCannotPayCommission() {
         // Arrange
         CollectingNotifications notifications = new CollectingNotifications();
@@ -145,12 +178,50 @@ class TransferServiceTest {
     }
 
     @Test
-    void transferWorksWithDifferentAccountTypes() {
+    void transferFromDebitToDebitAccount() {
+        // Arrange
+        CollectingNotifications notifications = new CollectingNotifications();
+        TransferService service = new TransferService(new NoCommission(), notifications);
+        BankAccount from = new DebitAccount("D1", "Иванов", 10_000);
+        BankAccount to = new DebitAccount("D2", "Петров", 2_000);
+
+        // Act
+        boolean transferred = service.transfer(from, to, 3_000);
+
+        // Assert
+        assertAll(
+                () -> assertTrue(transferred),
+                () -> assertEquals(7_000, from.getBalance(), 0.0001),
+                () -> assertEquals(5_000, to.getBalance(), 0.0001)
+        );
+    }
+
+    @Test
+    void transferFromDebitToSavingsAccount() {
+        // Arrange
+        CollectingNotifications notifications = new CollectingNotifications();
+        TransferService service = new TransferService(new NoCommission(), notifications);
+        BankAccount from = new DebitAccount("D", "Иванов", 5_000);
+        BankAccount to = new SavingsAccount("S", "Петров", 2_000, 500);
+
+        // Act
+        boolean transferred = service.transfer(from, to, 3_000);
+
+        // Assert
+        assertAll(
+                () -> assertTrue(transferred),
+                () -> assertEquals(2_000, from.getBalance(), 0.0001),
+                () -> assertEquals(5_000, to.getBalance(), 0.0001)
+        );
+    }
+
+    @Test
+    void transferFromCreditToDebitAccount() {
         // Arrange
         CollectingNotifications notifications = new CollectingNotifications();
         TransferService service = new TransferService(new NoCommission(), notifications);
         BankAccount from = new CreditAccount("C", "Сидоров", 1_000, 5_000);
-        BankAccount to = new SavingsAccount("S", "Петров", 2_000, 500);
+        BankAccount to = new DebitAccount("D", "Петров", 2_000);
 
         // Act
         boolean transferred = service.transfer(from, to, 4_000);
@@ -161,6 +232,25 @@ class TransferServiceTest {
                 () -> assertEquals(-3_000, from.getBalance(), 0.0001),
                 () -> assertEquals(6_000, to.getBalance(), 0.0001),
                 () -> assertEquals(List.of("Transfer 4000.0 completed"), notifications.messages)
+        );
+    }
+
+    @Test
+    void transferFromSavingsToDebitAccount() {
+        // Arrange
+        CollectingNotifications notifications = new CollectingNotifications();
+        TransferService service = new TransferService(new NoCommission(), notifications);
+        BankAccount from = new SavingsAccount("S", "Петров", 5_000, 1_000);
+        BankAccount to = new DebitAccount("D", "Иванов", 1_000);
+
+        // Act
+        boolean transferred = service.transfer(from, to, 3_000);
+
+        // Assert
+        assertAll(
+                () -> assertTrue(transferred),
+                () -> assertEquals(2_000, from.getBalance(), 0.0001),
+                () -> assertEquals(4_000, to.getBalance(), 0.0001)
         );
     }
 
