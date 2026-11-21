@@ -42,7 +42,7 @@ class CreditAccountTest {
     }
 
     @Test
-    void canWithdrawExactlyToCreditLimit() {
+    void canUseEntireCreditLimit() {
         // Arrange
         CreditAccount account = new CreditAccount("C1", "Сидоров", 1_000, 5_000);
 
@@ -70,6 +70,22 @@ class CreditAccountTest {
                 () -> assertFalse(zeroWithdrawn),
                 () -> assertFalse(negativeWithdrawn),
                 () -> assertEquals(1_000, account.getBalance(), 0.0001)
+        );
+    }
+
+    @Test
+    void failedWithdrawDoesNotChangeBalance() {
+        // Arrange
+        CreditAccount account = new CreditAccount("C1", "Сидоров", 1_000, 5_000);
+        account.withdraw(4_000);
+
+        // Act
+        boolean withdrawn = account.withdraw(3_000);
+
+        // Assert
+        assertAll(
+                () -> assertFalse(withdrawn),
+                () -> assertEquals(-3_000, account.getBalance(), 0.0001)
         );
     }
 

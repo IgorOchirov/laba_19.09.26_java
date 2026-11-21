@@ -11,6 +11,15 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class DebitAccountTest {
 
     @Test
+    void constructorKeepsInitialBalance() {
+        // Arrange / Act
+        DebitAccount account = new DebitAccount("D1", "Иванов", 10_000);
+
+        // Assert
+        assertEquals(10_000, account.getBalance(), 0.0001);
+    }
+
+    @Test
     void depositIncreasesBalance() {
         // Arrange
         DebitAccount account = new DebitAccount("D1", "Иванов", 10_000);
@@ -93,18 +102,31 @@ class DebitAccountTest {
     }
 
     @Test
-    void cannotWithdrawZeroOrNegativeAmount() {
+    void zeroWithdrawIsForbidden() {
         // Arrange
         DebitAccount account = new DebitAccount("D1", "Иванов", 10_000);
 
         // Act
-        boolean zeroWithdrawn = account.withdraw(0);
-        boolean negativeWithdrawn = account.withdraw(-100);
+        boolean withdrawn = account.withdraw(0);
 
         // Assert
         assertAll(
-                () -> assertFalse(zeroWithdrawn),
-                () -> assertFalse(negativeWithdrawn),
+                () -> assertFalse(withdrawn),
+                () -> assertEquals(10_000, account.getBalance(), 0.0001)
+        );
+    }
+
+    @Test
+    void negativeWithdrawIsForbidden() {
+        // Arrange
+        DebitAccount account = new DebitAccount("D1", "Иванов", 10_000);
+
+        // Act
+        boolean withdrawn = account.withdraw(-100);
+
+        // Assert
+        assertAll(
+                () -> assertFalse(withdrawn),
                 () -> assertEquals(10_000, account.getBalance(), 0.0001)
         );
     }

@@ -42,6 +42,22 @@ class SavingsAccountTest {
     }
 
     @Test
+    void failedWithdrawDoesNotChangeBalance() {
+        // Arrange
+        SavingsAccount account = new SavingsAccount("S1", "Петров", 10_000, 1_000);
+        account.withdraw(8_500);
+
+        // Act
+        boolean withdrawn = account.withdraw(1_000);
+
+        // Assert
+        assertAll(
+                () -> assertFalse(withdrawn),
+                () -> assertEquals(1_500, account.getBalance(), 0.0001)
+        );
+    }
+
+    @Test
     void canWithdrawExactlyToMinimumBalance() {
         // Arrange
         SavingsAccount account = new SavingsAccount("S1", "Петров", 10_000, 1_000);
