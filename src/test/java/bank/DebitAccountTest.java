@@ -32,27 +32,21 @@ class DebitAccountTest {
     }
 
     @Test
-    void depositOfZeroDoesNotChangeBalance() {
+    void zeroDepositThrowsException() {
         // Arrange
         DebitAccount account = new DebitAccount(new AccountNumber("4000000005"), "Иванов", 10_000);
 
-        // Act
-        account.deposit(0);
-
-        // Assert
-        assertEquals(10_000, account.getBalance(), 0.0001);
+        // Act / Assert
+        assertThrows(IllegalArgumentException.class, () -> account.deposit(0));
     }
 
     @Test
-    void depositOfNegativeAmountDoesNotChangeBalance() {
+    void negativeDepositThrowsException() {
         // Arrange
         DebitAccount account = new DebitAccount(new AccountNumber("4000000005"), "Иванов", 10_000);
 
-        // Act
-        account.deposit(-500);
-
-        // Assert
-        assertEquals(10_000, account.getBalance(), 0.0001);
+        // Act / Assert
+        assertThrows(IllegalArgumentException.class, () -> account.deposit(-100));
     }
 
     @Test

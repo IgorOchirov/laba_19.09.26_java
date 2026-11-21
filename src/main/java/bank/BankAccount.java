@@ -39,15 +39,16 @@ public abstract class BankAccount {
     }
 
     /**
-     * Пополняет счёт. Нулевая и отрицательная сумма просто игнорируются.
+     * Пополняет счёт. Сумма должна быть строго положительной.
      *
      * @param amount сумма пополнения
+     * @throws IllegalArgumentException если сумма не положительная
      */
     public void deposit(double amount) {
         if (amount <= 0) {
-            return;
+            throw new IllegalArgumentException("Amount must be positive");
         }
-        balance += amount;
+        increaseBalance(amount);
     }
 
     /**
@@ -111,6 +112,14 @@ public abstract class BankAccount {
      */
     protected boolean canWithdraw(double amount, double minBalance) {
         return amount > 0 && getBalance() - amount >= minBalance;
+    }
+
+    /**
+     * Увеличивает баланс на указанную сумму. Метод защищённый, чтобы наследники
+     * могли менять баланс, но поле не было доступно всем подряд.
+     */
+    protected void increaseBalance(double amount) {
+        balance += amount;
     }
 
     /**
