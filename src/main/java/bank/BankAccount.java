@@ -80,6 +80,27 @@ public abstract class BankAccount {
     }
 
     /**
+     * Счета с одинаковым номером считаются равными. Владелец, баланс и тип счёта
+     * в логическую идентичность не входят.
+     */
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (!(obj instanceof BankAccount)) {
+            return false;
+        }
+        BankAccount other = (BankAccount) obj;
+        return number.equals(other.number);
+    }
+
+    @Override
+    public int hashCode() {
+        return number.hashCode();
+    }
+
+    /**
      * Проверяет, можно ли снять сумму так, чтобы баланс не ушёл ниже минимума.
      * Метод защищённый: он нужен только наследникам с их правилами снятия.
      * Нулевые и отрицательные суммы снимать нельзя.
