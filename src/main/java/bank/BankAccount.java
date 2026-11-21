@@ -11,7 +11,7 @@ package bank;
  */
 public abstract class BankAccount {
 
-    private final String number;
+    private final AccountNumber number;
     private final String owner;
     private double balance;
 
@@ -22,9 +22,9 @@ public abstract class BankAccount {
      * @throws IllegalArgumentException если номер или владелец пустые,
      *                                  либо начальный баланс отрицательный
      */
-    protected BankAccount(String number, String owner, double initialBalance) {
-        if (number == null || number.isBlank()) {
-            throw new IllegalArgumentException("Номер счёта не может быть пустым");
+    protected BankAccount(AccountNumber number, String owner, double initialBalance) {
+        if (number == null) {
+            throw new IllegalArgumentException("Номер счёта не может быть null");
         }
         if (owner == null || owner.isBlank()) {
             throw new IllegalArgumentException("Владелец счёта не может быть пустым");
@@ -62,7 +62,7 @@ public abstract class BankAccount {
         return balance;
     }
 
-    public String getNumber() {
+    public AccountNumber getNumber() {
         return number;
     }
 
@@ -73,7 +73,7 @@ public abstract class BankAccount {
     @Override
     public String toString() {
         return getClass().getSimpleName() + "{\n" +
-                " number='" + number + "',\n" +
+                " number='" + number.value() + "',\n" +
                 " owner='" + owner + "',\n" +
                 " balance=" + balance + "\n" +
                 "}";

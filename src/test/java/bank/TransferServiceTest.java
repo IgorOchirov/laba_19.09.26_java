@@ -18,8 +18,8 @@ class TransferServiceTest {
         // Arrange
         FakeNotificationService notifications = new FakeNotificationService();
         TransferService service = new TransferService(new NoCommission(), notifications);
-        BankAccount from = new DebitAccount("A", "Иванов", 10_000);
-        BankAccount to = new DebitAccount("B", "Петров", 2_000);
+        BankAccount from = new DebitAccount(new AccountNumber("4000000001"), "Иванов", 10_000);
+        BankAccount to = new DebitAccount(new AccountNumber("4000000002"), "Петров", 2_000);
 
         // Act
         boolean transferred = service.transfer(from, to, 3_000);
@@ -39,8 +39,8 @@ class TransferServiceTest {
         // Arrange
         FakeNotificationService notifications = new FakeNotificationService();
         TransferService service = new TransferService(new NoCommission(), notifications);
-        BankAccount from = new DebitAccount("A", "Иванов", 1_000);
-        BankAccount to = new DebitAccount("B", "Петров", 2_000);
+        BankAccount from = new DebitAccount(new AccountNumber("4000000001"), "Иванов", 1_000);
+        BankAccount to = new DebitAccount(new AccountNumber("4000000002"), "Петров", 2_000);
 
         // Act
         boolean transferred = service.transfer(from, to, 3_000);
@@ -59,7 +59,7 @@ class TransferServiceTest {
         // Arrange
         FakeNotificationService notifications = new FakeNotificationService();
         TransferService service = new TransferService(new NoCommission(), notifications);
-        BankAccount account = new DebitAccount("A", "Иванов", 10_000);
+        BankAccount account = new DebitAccount(new AccountNumber("4000000001"), "Иванов", 10_000);
 
         // Act
         boolean transferred = service.transfer(account, account, 1_000);
@@ -77,8 +77,8 @@ class TransferServiceTest {
         // Arrange
         FakeNotificationService notifications = new FakeNotificationService();
         TransferService service = new TransferService(new NoCommission(), notifications);
-        BankAccount from = new DebitAccount("A", "Иванов", 10_000);
-        BankAccount to = new DebitAccount("B", "Петров", 0);
+        BankAccount from = new DebitAccount(new AccountNumber("4000000001"), "Иванов", 10_000);
+        BankAccount to = new DebitAccount(new AccountNumber("4000000002"), "Петров", 0);
 
         // Act
         boolean transferred = service.transfer(from, to, 0);
@@ -97,8 +97,8 @@ class TransferServiceTest {
         // Arrange
         FakeNotificationService notifications = new FakeNotificationService();
         TransferService service = new TransferService(new NoCommission(), notifications);
-        BankAccount from = new DebitAccount("A", "Иванов", 10_000);
-        BankAccount to = new DebitAccount("B", "Петров", 0);
+        BankAccount from = new DebitAccount(new AccountNumber("4000000001"), "Иванов", 10_000);
+        BankAccount to = new DebitAccount(new AccountNumber("4000000002"), "Петров", 0);
 
         // Act
         boolean transferred = service.transfer(from, to, -100);
@@ -117,8 +117,8 @@ class TransferServiceTest {
         // Arrange
         FakeNotificationService notifications = new FakeNotificationService();
         TransferService service = new TransferService(new PercentCommission(1), notifications);
-        BankAccount from = new DebitAccount("A", "Иванов", 10_100);
-        BankAccount to = new DebitAccount("B", "Петров", 0);
+        BankAccount from = new DebitAccount(new AccountNumber("4000000001"), "Иванов", 10_100);
+        BankAccount to = new DebitAccount(new AccountNumber("4000000002"), "Петров", 0);
 
         // Act
         boolean transferred = service.transfer(from, to, 10_000);
@@ -138,8 +138,8 @@ class TransferServiceTest {
         // Arrange
         FakeNotificationService notifications = new FakeNotificationService();
         TransferService service = new TransferService(new NoCommission(), notifications);
-        BankAccount from = new DebitAccount("A", "Иванов", 10_000);
-        BankAccount to = new DebitAccount("B", "Петров", 500);
+        BankAccount from = new DebitAccount(new AccountNumber("4000000001"), "Иванов", 10_000);
+        BankAccount to = new DebitAccount(new AccountNumber("4000000002"), "Петров", 500);
 
         // Act
         service.transfer(from, to, 3_000);
@@ -153,8 +153,8 @@ class TransferServiceTest {
         // Arrange
         FakeNotificationService notifications = new FakeNotificationService();
         TransferService service = new TransferService(new PercentCommission(1), notifications);
-        BankAccount from = new DebitAccount("A", "Иванов", 10_000);
-        BankAccount to = new DebitAccount("B", "Петров", 2_000);
+        BankAccount from = new DebitAccount(new AccountNumber("4000000001"), "Иванов", 10_000);
+        BankAccount to = new DebitAccount(new AccountNumber("4000000002"), "Петров", 2_000);
 
         // Act
         boolean transferred = service.transfer(from, to, 10_000);
@@ -173,8 +173,8 @@ class TransferServiceTest {
         // Arrange
         FakeNotificationService notifications = new FakeNotificationService();
         TransferService service = new TransferService(new NoCommission(), notifications);
-        BankAccount from = new DebitAccount("D1", "Иванов", 10_000);
-        BankAccount to = new DebitAccount("D2", "Петров", 2_000);
+        BankAccount from = new DebitAccount(new AccountNumber("4000000005"), "Иванов", 10_000);
+        BankAccount to = new DebitAccount(new AccountNumber("4000000006"), "Петров", 2_000);
 
         // Act
         boolean transferred = service.transfer(from, to, 3_000);
@@ -192,8 +192,8 @@ class TransferServiceTest {
         // Arrange
         FakeNotificationService notifications = new FakeNotificationService();
         TransferService service = new TransferService(new NoCommission(), notifications);
-        BankAccount from = new DebitAccount("D", "Иванов", 5_000);
-        BankAccount to = new SavingsAccount("S", "Петров", 2_000, 500);
+        BankAccount from = new DebitAccount(new AccountNumber("4000000004"), "Иванов", 5_000);
+        BankAccount to = new SavingsAccount(new AccountNumber("4000000007"), "Петров", 2_000, 500);
 
         // Act
         boolean transferred = service.transfer(from, to, 3_000);
@@ -211,8 +211,8 @@ class TransferServiceTest {
         // Arrange
         FakeNotificationService notifications = new FakeNotificationService();
         TransferService service = new TransferService(new NoCommission(), notifications);
-        BankAccount from = new CreditAccount("C", "Сидоров", 1_000, 5_000);
-        BankAccount to = new DebitAccount("D", "Петров", 2_000);
+        BankAccount from = new CreditAccount(new AccountNumber("4000000003"), "Сидоров", 1_000, 5_000);
+        BankAccount to = new DebitAccount(new AccountNumber("4000000004"), "Петров", 2_000);
 
         // Act
         boolean transferred = service.transfer(from, to, 4_000);
@@ -232,8 +232,8 @@ class TransferServiceTest {
         // Arrange
         FakeNotificationService notifications = new FakeNotificationService();
         TransferService service = new TransferService(new NoCommission(), notifications);
-        BankAccount from = new SavingsAccount("S", "Петров", 5_000, 1_000);
-        BankAccount to = new DebitAccount("D", "Иванов", 1_000);
+        BankAccount from = new SavingsAccount(new AccountNumber("4000000007"), "Петров", 5_000, 1_000);
+        BankAccount to = new DebitAccount(new AccountNumber("4000000004"), "Иванов", 1_000);
 
         // Act
         boolean transferred = service.transfer(from, to, 3_000);

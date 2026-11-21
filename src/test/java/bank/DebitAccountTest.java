@@ -13,7 +13,7 @@ class DebitAccountTest {
     @Test
     void constructorKeepsInitialBalance() {
         // Arrange / Act
-        DebitAccount account = new DebitAccount("D1", "Иванов", 10_000);
+        DebitAccount account = new DebitAccount(new AccountNumber("4000000005"), "Иванов", 10_000);
 
         // Assert
         assertEquals(10_000, account.getBalance(), 0.0001);
@@ -22,7 +22,7 @@ class DebitAccountTest {
     @Test
     void depositIncreasesBalance() {
         // Arrange
-        DebitAccount account = new DebitAccount("D1", "Иванов", 10_000);
+        DebitAccount account = new DebitAccount(new AccountNumber("4000000005"), "Иванов", 10_000);
 
         // Act
         account.deposit(2_000);
@@ -34,7 +34,7 @@ class DebitAccountTest {
     @Test
     void depositOfZeroDoesNotChangeBalance() {
         // Arrange
-        DebitAccount account = new DebitAccount("D1", "Иванов", 10_000);
+        DebitAccount account = new DebitAccount(new AccountNumber("4000000005"), "Иванов", 10_000);
 
         // Act
         account.deposit(0);
@@ -46,7 +46,7 @@ class DebitAccountTest {
     @Test
     void depositOfNegativeAmountDoesNotChangeBalance() {
         // Arrange
-        DebitAccount account = new DebitAccount("D1", "Иванов", 10_000);
+        DebitAccount account = new DebitAccount(new AccountNumber("4000000005"), "Иванов", 10_000);
 
         // Act
         account.deposit(-500);
@@ -58,7 +58,7 @@ class DebitAccountTest {
     @Test
     void withdrawDecreasesBalanceWhenEnoughMoney() {
         // Arrange
-        DebitAccount account = new DebitAccount("D1", "Иванов", 10_000);
+        DebitAccount account = new DebitAccount(new AccountNumber("4000000005"), "Иванов", 10_000);
 
         // Act
         boolean withdrawn = account.withdraw(8_000);
@@ -73,7 +73,7 @@ class DebitAccountTest {
     @Test
     void cannotWithdrawMoreThanBalance() {
         // Arrange
-        DebitAccount account = new DebitAccount("D1", "Иванов", 10_000);
+        DebitAccount account = new DebitAccount(new AccountNumber("4000000005"), "Иванов", 10_000);
         account.withdraw(8_000);
 
         // Act
@@ -89,7 +89,7 @@ class DebitAccountTest {
     @Test
     void canWithdrawEntireBalance() {
         // Arrange
-        DebitAccount account = new DebitAccount("D1", "Иванов", 10_000);
+        DebitAccount account = new DebitAccount(new AccountNumber("4000000005"), "Иванов", 10_000);
 
         // Act
         boolean withdrawn = account.withdraw(10_000);
@@ -104,7 +104,7 @@ class DebitAccountTest {
     @Test
     void zeroWithdrawIsForbidden() {
         // Arrange
-        DebitAccount account = new DebitAccount("D1", "Иванов", 10_000);
+        DebitAccount account = new DebitAccount(new AccountNumber("4000000005"), "Иванов", 10_000);
 
         // Act
         boolean withdrawn = account.withdraw(0);
@@ -119,7 +119,7 @@ class DebitAccountTest {
     @Test
     void negativeWithdrawIsForbidden() {
         // Arrange
-        DebitAccount account = new DebitAccount("D1", "Иванов", 10_000);
+        DebitAccount account = new DebitAccount(new AccountNumber("4000000005"), "Иванов", 10_000);
 
         // Act
         boolean withdrawn = account.withdraw(-100);
@@ -135,13 +135,13 @@ class DebitAccountTest {
     void constructorRejectsNegativeInitialBalance() {
         // Arrange / Act / Assert
         assertThrows(IllegalArgumentException.class,
-                () -> new DebitAccount("D1", "Иванов", -1));
+                () -> new DebitAccount(new AccountNumber("4000000005"), "Иванов", -1));
     }
 
     @Test
     void numberAndOwnerRemainUnchanged() {
         // Arrange
-        DebitAccount account = new DebitAccount("D1", "Иванов", 10_000);
+        DebitAccount account = new DebitAccount(new AccountNumber("4000000005"), "Иванов", 10_000);
 
         // Act
         account.deposit(1_000);
@@ -149,7 +149,7 @@ class DebitAccountTest {
 
         // Assert
         assertAll(
-                () -> assertEquals("D1", account.getNumber()),
+                () -> assertEquals(new AccountNumber("4000000005"), account.getNumber()),
                 () -> assertEquals("Иванов", account.getOwner())
         );
     }

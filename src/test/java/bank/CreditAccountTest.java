@@ -13,7 +13,7 @@ class CreditAccountTest {
     @Test
     void withdrawCanMakeBalanceNegativeDownToCreditLimit() {
         // Arrange
-        CreditAccount account = new CreditAccount("C1", "Сидоров", 1_000, 5_000);
+        CreditAccount account = new CreditAccount(new AccountNumber("4000000009"), "Сидоров", 1_000, 5_000);
 
         // Act
         boolean withdrawn = account.withdraw(4_000);
@@ -28,7 +28,7 @@ class CreditAccountTest {
     @Test
     void cannotWithdrawBeyondCreditLimit() {
         // Arrange
-        CreditAccount account = new CreditAccount("C1", "Сидоров", 1_000, 5_000);
+        CreditAccount account = new CreditAccount(new AccountNumber("4000000009"), "Сидоров", 1_000, 5_000);
         account.withdraw(4_000);
 
         // Act
@@ -44,7 +44,7 @@ class CreditAccountTest {
     @Test
     void canUseEntireCreditLimit() {
         // Arrange
-        CreditAccount account = new CreditAccount("C1", "Сидоров", 1_000, 5_000);
+        CreditAccount account = new CreditAccount(new AccountNumber("4000000009"), "Сидоров", 1_000, 5_000);
 
         // Act
         boolean withdrawn = account.withdraw(6_000);
@@ -59,7 +59,7 @@ class CreditAccountTest {
     @Test
     void cannotWithdrawZeroOrNegativeAmount() {
         // Arrange
-        CreditAccount account = new CreditAccount("C1", "Сидоров", 1_000, 5_000);
+        CreditAccount account = new CreditAccount(new AccountNumber("4000000009"), "Сидоров", 1_000, 5_000);
 
         // Act
         boolean zeroWithdrawn = account.withdraw(0);
@@ -76,7 +76,7 @@ class CreditAccountTest {
     @Test
     void failedWithdrawDoesNotChangeBalance() {
         // Arrange
-        CreditAccount account = new CreditAccount("C1", "Сидоров", 1_000, 5_000);
+        CreditAccount account = new CreditAccount(new AccountNumber("4000000009"), "Сидоров", 1_000, 5_000);
         account.withdraw(4_000);
 
         // Act
@@ -92,7 +92,7 @@ class CreditAccountTest {
     @Test
     void depositRepaysCredit() {
         // Arrange
-        CreditAccount account = new CreditAccount("C1", "Сидоров", 1_000, 5_000);
+        CreditAccount account = new CreditAccount(new AccountNumber("4000000009"), "Сидоров", 1_000, 5_000);
         account.withdraw(4_000);
 
         // Act
@@ -105,7 +105,7 @@ class CreditAccountTest {
     @Test
     void creditLimitIsStoredInAccount() {
         // Arrange
-        CreditAccount account = new CreditAccount("C1", "Сидоров", 1_000, 5_000);
+        CreditAccount account = new CreditAccount(new AccountNumber("4000000009"), "Сидоров", 1_000, 5_000);
 
         // Act / Assert
         assertEquals(5_000, account.getCreditLimit(), 0.0001);
@@ -115,6 +115,6 @@ class CreditAccountTest {
     void constructorRejectsNegativeCreditLimit() {
         // Arrange / Act / Assert
         assertThrows(IllegalArgumentException.class,
-                () -> new CreditAccount("C1", "Сидоров", 0, -1));
+                () -> new CreditAccount(new AccountNumber("4000000009"), "Сидоров", 0, -1));
     }
 }

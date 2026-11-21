@@ -13,24 +13,24 @@ class BankAccountTest {
     @Test
     void accountsWithSameNumberAreEqual() {
         // Arrange
-        BankAccount debit = new DebitAccount("001", "Ivan", 10_000);
-        BankAccount savings = new SavingsAccount("001", "Ivan", 5_000, 1_000);
-        BankAccount credit = new CreditAccount("001", "Ivan", 1_000, 5_000);
+        BankAccount debit = new DebitAccount(new AccountNumber("0010000000"), "Ivan", 10_000);
+        BankAccount savings = new SavingsAccount(new AccountNumber("0010000000"), "Ivan", 5_000, 1_000);
+        BankAccount credit = new CreditAccount(new AccountNumber("0010000000"), "Ivan", 1_000, 5_000);
 
         // Act / Assert
         assertAll(
                 () -> assertEquals(debit, savings),
                 () -> assertEquals(savings, credit),
                 () -> assertEquals(credit, debit),
-                () -> assertEquals(debit, new DebitAccount("001", "Another owner", 0))
+                () -> assertEquals(debit, new DebitAccount(new AccountNumber("0010000000"), "Another owner", 0))
         );
     }
 
     @Test
     void accountsWithDifferentNumbersAreNotEqual() {
         // Arrange
-        BankAccount first = new DebitAccount("001", "Ivan", 10_000);
-        BankAccount second = new SavingsAccount("002", "Ivan", 10_000, 1_000);
+        BankAccount first = new DebitAccount(new AccountNumber("0010000000"), "Ivan", 10_000);
+        BankAccount second = new SavingsAccount(new AccountNumber("0020000000"), "Ivan", 10_000, 1_000);
 
         // Act / Assert
         assertAll(
@@ -42,7 +42,7 @@ class BankAccountTest {
     @Test
     void accountEqualsItself() {
         // Arrange
-        BankAccount account = new DebitAccount("001", "Ivan", 10_000);
+        BankAccount account = new DebitAccount(new AccountNumber("0010000000"), "Ivan", 10_000);
 
         // Act / Assert
         assertTrue(account.equals(account));
@@ -51,7 +51,7 @@ class BankAccountTest {
     @Test
     void accountDoesNotEqualNull() {
         // Arrange
-        BankAccount account = new DebitAccount("001", "Ivan", 10_000);
+        BankAccount account = new DebitAccount(new AccountNumber("0010000000"), "Ivan", 10_000);
 
         // Act / Assert
         assertFalse(account.equals(null));
@@ -60,8 +60,8 @@ class BankAccountTest {
     @Test
     void equalAccountsHaveSameHashCode() {
         // Arrange
-        BankAccount debit = new DebitAccount("001", "Ivan", 10_000);
-        BankAccount credit = new CreditAccount("001", "Another owner", 0, 5_000);
+        BankAccount debit = new DebitAccount(new AccountNumber("0010000000"), "Ivan", 10_000);
+        BankAccount credit = new CreditAccount(new AccountNumber("0010000000"), "Another owner", 0, 5_000);
 
         // Act / Assert
         assertAll(
@@ -73,9 +73,9 @@ class BankAccountTest {
     @Test
     void toStringShowsConcreteClassAndState() {
         // Arrange
-        BankAccount debit = new DebitAccount("001", "Ivan", 10_000);
+        BankAccount debit = new DebitAccount(new AccountNumber("0010000000"), "Ivan", 10_000);
         String expected = "DebitAccount{\n" +
-                " number='001',\n" +
+                " number='0010000000',\n" +
                 " owner='Ivan',\n" +
                 " balance=10000.0\n" +
                 "}";
@@ -83,9 +83,9 @@ class BankAccountTest {
         // Act / Assert
         assertAll(
                 () -> assertEquals(expected, debit.toString()),
-                () -> assertTrue(new SavingsAccount("002", "Ivan", 0, 100)
+                () -> assertTrue(new SavingsAccount(new AccountNumber("0020000000"), "Ivan", 0, 100)
                         .toString().startsWith("SavingsAccount{")),
-                () -> assertTrue(new CreditAccount("003", "Ivan", 0, 100)
+                () -> assertTrue(new CreditAccount(new AccountNumber("0030000000"), "Ivan", 0, 100)
                         .toString().startsWith("CreditAccount{"))
         );
     }

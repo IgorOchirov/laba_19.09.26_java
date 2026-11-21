@@ -13,7 +13,7 @@ class SavingsAccountTest {
     @Test
     void withdrawKeepsBalanceAboveMinimum() {
         // Arrange
-        SavingsAccount account = new SavingsAccount("S1", "Петров", 10_000, 1_000);
+        SavingsAccount account = new SavingsAccount(new AccountNumber("4000000008"), "Петров", 10_000, 1_000);
 
         // Act
         boolean withdrawn = account.withdraw(8_500);
@@ -28,7 +28,7 @@ class SavingsAccountTest {
     @Test
     void cannotWithdrawBelowMinimumBalance() {
         // Arrange
-        SavingsAccount account = new SavingsAccount("S1", "Петров", 10_000, 1_000);
+        SavingsAccount account = new SavingsAccount(new AccountNumber("4000000008"), "Петров", 10_000, 1_000);
         account.withdraw(8_500);
 
         // Act
@@ -44,7 +44,7 @@ class SavingsAccountTest {
     @Test
     void failedWithdrawDoesNotChangeBalance() {
         // Arrange
-        SavingsAccount account = new SavingsAccount("S1", "Петров", 10_000, 1_000);
+        SavingsAccount account = new SavingsAccount(new AccountNumber("4000000008"), "Петров", 10_000, 1_000);
         account.withdraw(8_500);
 
         // Act
@@ -60,7 +60,7 @@ class SavingsAccountTest {
     @Test
     void canWithdrawExactlyToMinimumBalance() {
         // Arrange
-        SavingsAccount account = new SavingsAccount("S1", "Петров", 10_000, 1_000);
+        SavingsAccount account = new SavingsAccount(new AccountNumber("4000000008"), "Петров", 10_000, 1_000);
         account.withdraw(8_500);
 
         // Act
@@ -76,7 +76,7 @@ class SavingsAccountTest {
     @Test
     void cannotWithdrawZeroOrNegativeAmount() {
         // Arrange
-        SavingsAccount account = new SavingsAccount("S1", "Петров", 10_000, 1_000);
+        SavingsAccount account = new SavingsAccount(new AccountNumber("4000000008"), "Петров", 10_000, 1_000);
 
         // Act
         boolean zeroWithdrawn = account.withdraw(0);
@@ -93,7 +93,7 @@ class SavingsAccountTest {
     @Test
     void depositIncreasesBalance() {
         // Arrange
-        SavingsAccount account = new SavingsAccount("S1", "Петров", 10_000, 1_000);
+        SavingsAccount account = new SavingsAccount(new AccountNumber("4000000008"), "Петров", 10_000, 1_000);
 
         // Act
         account.deposit(2_000);
@@ -105,7 +105,7 @@ class SavingsAccountTest {
     @Test
     void minimumBalanceIsStoredInAccount() {
         // Arrange
-        SavingsAccount account = new SavingsAccount("S1", "Петров", 10_000, 1_000);
+        SavingsAccount account = new SavingsAccount(new AccountNumber("4000000008"), "Петров", 10_000, 1_000);
 
         // Act / Assert
         assertEquals(1_000, account.getMinimumBalance(), 0.0001);
@@ -115,6 +115,6 @@ class SavingsAccountTest {
     void constructorRejectsNegativeMinimumBalance() {
         // Arrange / Act / Assert
         assertThrows(IllegalArgumentException.class,
-                () -> new SavingsAccount("S1", "Петров", 10_000, -1));
+                () -> new SavingsAccount(new AccountNumber("4000000008"), "Петров", 10_000, -1));
     }
 }
