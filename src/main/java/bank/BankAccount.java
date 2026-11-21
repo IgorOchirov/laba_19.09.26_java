@@ -70,6 +70,15 @@ public abstract class BankAccount {
         return owner;
     }
 
+    @Override
+    public String toString() {
+        return getClass().getSimpleName() + "{\n" +
+                " number='" + number + "',\n" +
+                " owner='" + owner + "',\n" +
+                " balance=" + balance + "\n" +
+                "}";
+    }
+
     /**
      * Проверяет, можно ли снять сумму так, чтобы баланс не ушёл ниже минимума.
      * Метод защищённый: он нужен только наследникам с их правилами снятия.
