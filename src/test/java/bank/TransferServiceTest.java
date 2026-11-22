@@ -8,7 +8,6 @@ import java.nio.charset.StandardCharsets;
 
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -23,11 +22,10 @@ class TransferServiceTest {
         BankAccount to = new DebitAccount(new AccountNumber("4000000002"), "Петров", 2_000);
 
         // Act
-        boolean transferred = service.transfer(from, to, 3_000);
+        service.transfer(from, to, 3_000);
 
         // Assert
         assertAll(
-                () -> assertTrue(transferred),
                 () -> assertEquals(7_000, from.getBalance(), 0.0001),
                 () -> assertEquals(5_000, to.getBalance(), 0.0001),
                 () -> assertEquals(1, notifications.getNotificationCount()),
@@ -36,17 +34,72 @@ class TransferServiceTest {
     }
 
     @Test
-    void failedTransferLeavesBalancesUnchangedAndSendsNoNotification() {
+    void negativeTransferThrowsException() {
+        // Arrange
+        FakeNotificationService notifications = new FakeNotificationService();
+        TransferService service = new TransferService(new NoCommission(), notifications);
+        BankAccount from = new DebitAccount(new AccountNumber("4000000001"), "Иванов", 10_000);
+        BankAccount to = new DebitAccount(new AccountNumber("4000000002"), "Петров", 2_000);
+
+        // Act / Assert
+        assertAll(
+                () -> assertThrows(IllegalArgumentException.class,
+                        () -> service.transfer(from, to, -100)),
+                () -> assertEquals(10_000, from.getBalance(), 0.0001),
+                () -> assertEquals(2_000, to.getBalance(), 0.0001),
+                () -> assertEquals(0, notifications.getNotificationCount())
+        );
+    }
+
+    @Test
+    void zeroTransferThrowsException() {
+        // Arrange
+        FakeNotificationService notifications = new FakeNotificationService();
+        TransferService service = new TransferService(new NoCommission(), notifications);
+        BankAccount from = new DebitAccount(new AccountNumber("4000000001"), "Иванов", 10_000);
+        BankAccount to = new DebitAccount(new AccountNumber("4000000002"), "Петров", 2_000);
+
+        // Act / Assert
+        assertAll(
+                () -> assertThrows(IllegalArgumentException.class,
+                        () -> service.transfer(from, to, 0)),
+                () -> assertEquals(10_000, from.getBalance(), 0.0001),
+                () -> assertEquals(2_000, to.getBalance(), 0.0001),
+                () -> assertEquals(0, notifications.getNotificationCount())
+        );
+    }
+
+    @Test
+    void transferToSameAccountThrowsException() {
+        // Arrange
+        FakeNotificationService notifications = new FakeNotificationService();
+        TransferService service = new TransferService(new NoCommission(), notifications);
+        BankAccount account = new DebitAccount(new AccountNumber("4000000001"), "Иванов", 10_000);
+
+        // Act / Assert
+        assertAll(
+                () -> assertThrows(IllegalArgumentException.class,
+                        () -> service.transfer(account, account, 1_000)),
+                () -> assertEquals(10_000, account.getBalance(), 0.0001),
+                () -> assertEquals(0, notifications.getNotificationCount())
+        );
+    }
+
+    @Test
+    void transferWithoutEnoughMoneyThrowsException() {
         // Arrange
         FakeNotificationService notifications = new FakeNotificationService();
         TransferService service = new TransferService(new NoCommission(), notifications);
         BankAccount from = new DebitAccount(new AccountNumber("4000000001"), "Иванов", 1_000);
         BankAccount to = new DebitAccount(new AccountNumber("4000000002"), "Петров", 2_000);
 
-        // Act / Assert
+        // Act
+        InsufficientFundsException exception = assertThrows(InsufficientFundsException.class,
+                () -> service.transfer(from, to, 5_000));
+
+        // Assert
         assertAll(
-                () -> assertThrows(TransferLimitExceededException.class,
-                        () -> service.transfer(from, to, 3_000)),
+                () -> assertEquals("Insufficient funds", exception.getMessage()),
                 () -> assertEquals(1_000, from.getBalance(), 0.0001),
                 () -> assertEquals(2_000, to.getBalance(), 0.0001),
                 () -> assertEquals(0, notifications.getNotificationCount())
@@ -54,58 +107,21 @@ class TransferServiceTest {
     }
 
     @Test
-    void cannotTransferToSameAccount() {
+    void transferOverLimitThrowsException() {
         // Arrange
         FakeNotificationService notifications = new FakeNotificationService();
         TransferService service = new TransferService(new NoCommission(), notifications);
-        BankAccount account = new DebitAccount(new AccountNumber("4000000001"), "Иванов", 10_000);
-
-        // Act
-        boolean transferred = service.transfer(account, account, 1_000);
-
-        // Assert
-        assertAll(
-                () -> assertFalse(transferred),
-                () -> assertEquals(10_000, account.getBalance(), 0.0001),
-                () -> assertEquals(0, notifications.getNotificationCount())
-        );
-    }
-
-    @Test
-    void cannotTransferZeroAmount() {
-        // Arrange
-        FakeNotificationService notifications = new FakeNotificationService();
-        TransferService service = new TransferService(new NoCommission(), notifications);
-        BankAccount from = new DebitAccount(new AccountNumber("4000000001"), "Иванов", 10_000);
+        BankAccount from = new DebitAccount(new AccountNumber("4000000001"), "Иванов", 100_000);
         BankAccount to = new DebitAccount(new AccountNumber("4000000002"), "Петров", 0);
 
         // Act
-        boolean transferred = service.transfer(from, to, 0);
+        TransferLimitExceededException exception = assertThrows(TransferLimitExceededException.class,
+                () -> service.transfer(from, to, 50_001));
 
         // Assert
         assertAll(
-                () -> assertFalse(transferred),
-                () -> assertEquals(10_000, from.getBalance(), 0.0001),
-                () -> assertEquals(0, to.getBalance(), 0.0001),
-                () -> assertEquals(0, notifications.getNotificationCount())
-        );
-    }
-
-    @Test
-    void cannotTransferNegativeAmount() {
-        // Arrange
-        FakeNotificationService notifications = new FakeNotificationService();
-        TransferService service = new TransferService(new NoCommission(), notifications);
-        BankAccount from = new DebitAccount(new AccountNumber("4000000001"), "Иванов", 10_000);
-        BankAccount to = new DebitAccount(new AccountNumber("4000000002"), "Петров", 0);
-
-        // Act
-        boolean transferred = service.transfer(from, to, -100);
-
-        // Assert
-        assertAll(
-                () -> assertFalse(transferred),
-                () -> assertEquals(10_000, from.getBalance(), 0.0001),
+                () -> assertEquals("Transfer limit exceeded", exception.getMessage()),
+                () -> assertEquals(100_000, from.getBalance(), 0.0001),
                 () -> assertEquals(0, to.getBalance(), 0.0001),
                 () -> assertEquals(0, notifications.getNotificationCount())
         );
@@ -120,14 +136,12 @@ class TransferServiceTest {
         BankAccount to = new DebitAccount(new AccountNumber("4000000002"), "Петров", 0);
 
         // Act
-        boolean transferred = service.transfer(from, to, 10_000);
+        service.transfer(from, to, 10_000);
 
         // Assert
         assertAll(
-                () -> assertTrue(transferred),
                 () -> assertEquals(0, from.getBalance(), 0.0001),
                 () -> assertEquals(10_000, to.getBalance(), 0.0001),
-                () -> assertEquals(1, notifications.getNotificationCount()),
                 () -> assertEquals("Transfer 10000.0 completed", notifications.getLastMessage())
         );
     }
@@ -157,9 +171,29 @@ class TransferServiceTest {
 
         // Act / Assert
         assertAll(
-                () -> assertThrows(TransferLimitExceededException.class,
+                () -> assertThrows(InsufficientFundsException.class,
                         () -> service.transfer(from, to, 10_000)),
                 () -> assertEquals(10_000, from.getBalance(), 0.0001),
+                () -> assertEquals(2_000, to.getBalance(), 0.0001),
+                () -> assertEquals(0, notifications.getNotificationCount())
+        );
+    }
+
+    @Test
+    void failedTransferDoesNotChangeBalances() {
+        // Arrange
+        FakeNotificationService notifications = new FakeNotificationService();
+        TransferService service = new TransferService(new NoCommission(), notifications);
+        BankAccount from = new DebitAccount(new AccountNumber("4000000001"), "Иванов", 1_000);
+        BankAccount to = new DebitAccount(new AccountNumber("4000000002"), "Петров", 2_000);
+
+        // Act
+        assertThrows(InsufficientFundsException.class,
+                () -> service.transfer(from, to, 5_000));
+
+        // Assert
+        assertAll(
+                () -> assertEquals(1_000, from.getBalance(), 0.0001),
                 () -> assertEquals(2_000, to.getBalance(), 0.0001),
                 () -> assertEquals(0, notifications.getNotificationCount())
         );
@@ -174,11 +208,10 @@ class TransferServiceTest {
         BankAccount to = new DebitAccount(new AccountNumber("4000000006"), "Петров", 2_000);
 
         // Act
-        boolean transferred = service.transfer(from, to, 3_000);
+        service.transfer(from, to, 3_000);
 
         // Assert
         assertAll(
-                () -> assertTrue(transferred),
                 () -> assertEquals(7_000, from.getBalance(), 0.0001),
                 () -> assertEquals(5_000, to.getBalance(), 0.0001)
         );
@@ -189,15 +222,14 @@ class TransferServiceTest {
         // Arrange
         FakeNotificationService notifications = new FakeNotificationService();
         TransferService service = new TransferService(new NoCommission(), notifications);
-        BankAccount from = new DebitAccount(new AccountNumber("4000000004"), "Иванов", 5_000);
+        BankAccount from = new DebitAccount(new AccountNumber("4000000005"), "Иванов", 5_000);
         BankAccount to = new SavingsAccount(new AccountNumber("4000000007"), "Петров", 2_000, 500);
 
         // Act
-        boolean transferred = service.transfer(from, to, 3_000);
+        service.transfer(from, to, 3_000);
 
         // Assert
         assertAll(
-                () -> assertTrue(transferred),
                 () -> assertEquals(2_000, from.getBalance(), 0.0001),
                 () -> assertEquals(5_000, to.getBalance(), 0.0001)
         );
@@ -212,14 +244,12 @@ class TransferServiceTest {
         BankAccount to = new DebitAccount(new AccountNumber("4000000004"), "Петров", 2_000);
 
         // Act
-        boolean transferred = service.transfer(from, to, 4_000);
+        service.transfer(from, to, 4_000);
 
         // Assert
         assertAll(
-                () -> assertTrue(transferred),
                 () -> assertEquals(-3_000, from.getBalance(), 0.0001),
                 () -> assertEquals(6_000, to.getBalance(), 0.0001),
-                () -> assertEquals(1, notifications.getNotificationCount()),
                 () -> assertEquals("Transfer 4000.0 completed", notifications.getLastMessage())
         );
     }
@@ -230,14 +260,13 @@ class TransferServiceTest {
         FakeNotificationService notifications = new FakeNotificationService();
         TransferService service = new TransferService(new NoCommission(), notifications);
         BankAccount from = new SavingsAccount(new AccountNumber("4000000007"), "Петров", 5_000, 1_000);
-        BankAccount to = new DebitAccount(new AccountNumber("4000000004"), "Иванов", 1_000);
+        BankAccount to = new DebitAccount(new AccountNumber("4000000005"), "Иванов", 1_000);
 
         // Act
-        boolean transferred = service.transfer(from, to, 3_000);
+        service.transfer(from, to, 3_000);
 
         // Assert
         assertAll(
-                () -> assertTrue(transferred),
                 () -> assertEquals(2_000, from.getBalance(), 0.0001),
                 () -> assertEquals(4_000, to.getBalance(), 0.0001)
         );
