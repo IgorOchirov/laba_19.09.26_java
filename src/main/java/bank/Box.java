@@ -1,14 +1,14 @@
 package bank;
 
-public class Box {
+public class Box<T> {
 
-    private Object value;
+    private T value;
 
-    public void set(Object value) {
+    public void set(T value) {
         this.value = value;
     }
 
-    public Object get() {
+    public T get() {
         return value;
     }
 }
