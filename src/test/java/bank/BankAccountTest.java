@@ -71,6 +71,16 @@ class BankAccountTest {
     }
 
     @Test
+    void accountIdIsItsNumber() {
+        // Arrange
+        AccountNumber number = new AccountNumber("0010000000");
+        BankAccount account = new DebitAccount(number, "Ivan", 10_000);
+
+        // Act / Assert
+        assertEquals(number, account.getId());
+    }
+
+    @Test
     void toStringShowsConcreteClassAndState() {
         // Arrange
         BankAccount debit = new DebitAccount(new AccountNumber("0010000000"), "Ivan", 10_000);

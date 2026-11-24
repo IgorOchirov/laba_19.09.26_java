@@ -15,6 +15,7 @@ class TransactionTest {
 
         // Act
         Transaction transaction = new Transaction(
+                1L,
                 TransactionType.DEPOSIT,
                 number,
                 5_000,
@@ -23,6 +24,8 @@ class TransactionTest {
 
         // Assert
         assertAll(
+                () -> assertEquals(1L, transaction.id()),
+                () -> assertEquals(1L, transaction.getId()),
                 () -> assertEquals(TransactionType.DEPOSIT, transaction.type()),
                 () -> assertEquals(number, transaction.account()),
                 () -> assertEquals(5_000, transaction.amount(), 0.0001),
@@ -34,6 +37,7 @@ class TransactionTest {
     void transactionPrintsReadableState() {
         // Arrange
         Transaction transaction = new Transaction(
+                2L,
                 TransactionType.TRANSFER,
                 new AccountNumber("0987654321"),
                 3_000,
